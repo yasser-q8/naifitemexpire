@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مراقبة صلاحية المنتجات - شركة نايف للأغذية</title>
+    <link rel="icon" href="https://i.postimg.cc/NM2zJWZD/NAIF-LOGO.jpg" type="image/jpeg">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f7fc;
+            padding: 20px;
+            color: #1e2a3a;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            padding: 25px 30px 30px;
+        }
+        /* header */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-bottom: 3px solid #e63946;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .header img {
+            height: 70px;
+            width: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        }
+        .header .title-group {
+            flex: 1;
+        }
+        .header h1 {
+            font-size: 26px;
+            color: #1e2a3a;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .header h1 small {
+            font-size: 16px;
+            font-weight: 400;
+            color: #6b7a8f;
+            display: block;
+            margin-top: 4px;
+        }
+        .header .sub {
+            font-size: 14px;
+            color: #6b7a8f;
+            background: #f0f4fa;
+            padding: 6px 18px;
+            border-radius: 30px;
+            white-space: nowrap;
+        }
+        .header .sub strong {
+            color: #e63946;
+        }
+
+        /* controls */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            background: #f8faff;
+            padding: 12px 20px;
+            border-radius: 14px;
+            border: 1px solid #e9edf4;
+        }
+        .controls label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .controls input[type="number"] {
+            width: 80px;
+            padding: 6px 10px;
+            border: 1px solid #d0d8e3;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fff;
+        }
+        .controls .filter-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin-right: auto;
+        }
+        .controls .filter-group select {
+            padding: 6px 14px;
+            border: 1px solid #d0d8e3;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 14px;
+            min-width: 160px;
+        }
+        .controls .btn-reset {
+            background: #e63946;
+            color: #fff;
+            border: none;
+            padding: 6px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .controls .btn-reset:hover {
+            background: #c62836;
+        }
+        .badge-count {
+            background: #e63946;
+            color: #fff;
+            font-size: 13px;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-weight: 600;
+        }
+
+        /* table wrapper */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 14px;
+            border: 1px solid #e9edf4;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            min-width: 1000px;
+        }
+        th {
+            background: #1e2a3a;
+            color: #fff;
+            padding: 14px 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #eef2f8;
+            vertical-align: middle;
+            text-align: center;
+        }
+        tr:hover td {
+            background: #fafcff;
+        }
+        .col-group {
+            font-size: 12px;
+            color: #2c3e50;
+            background: #eef3fa;
+            padding: 4px 10px;
+            border-radius: 30px;
+            display: inline-block;
+            white-space: nowrap;
+        }
+        .col-code {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #1e2a3a;
+            font-size: 13px;
+        }
+        .col-name {
+            text-align: right;
+            font-weight: 500;
+            min-width: 160px;
+        }
+        .col-date {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #2c3e50;
+        }
+        .col-days {
+            font-weight: 700;
+            font-size: 16px;
+        }
+        .col-days.warning {
+            color: #e63946;
+        }
+        .col-days.good {
+            color: #2a9d8f;
+        }
+        .col-days.critical {
+            color: #d62828;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .alert-box {
+            font-size: 20px;
+            font-weight: 800;
+            padding: 6px 10px;
+            border-radius: 10px;
+            display: inline-block;
+            min-width: 80px;
+        }
+        .alert-box.danger {
+            color: #b71c1c;
+            background: #ffebee;
+            border: 2px solid #d32f2f;
+        }
+        .alert-box.warning {
+            color: #e65100;
+            background: #fff3e0;
+            border: 2px solid #f57c00;
+        }
+        .alert-box.safe {
+            color: #1b5e20;
+            background: #e8f5e9;
+            border: 2px solid #388e3c;
+        }
+        .alert-box.expired {
+            color: #880e4f;
+            background: #fce4ec;
+            border: 2px solid #ad1457;
+        }
+
+        .input-threshold {
+            width: 70px;
+            padding: 5px 6px;
+            border: 1px solid #cfd8e6;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            background: #fff;
+            transition: 0.2s;
+        }
+        .input-threshold:focus {
+            border-color: #e63946;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.15);
+        }
+
+        .row-expired td {
+            background: #fff5f5 !important;
+        }
+        .row-warning td {
+            background: #fffbf0 !important;
+        }
+
+        /* footer signature */
+        .footer {
+            margin-top: 35px;
+            padding-top: 20px;
+            border-top: 2px solid #e9edf4;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .footer .update-info {
+            font-size: 13px;
+            color: #6b7a8f;
+        }
+
+        /* ===== توقيع المطور ===== */
+        .signature-card {
+            position: relative;
+            display: inline-block;
+            padding: 7px 16px;
+            border: 2px solid #e63946;
+            border-radius: 12px;
+            background: transparent;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.75rem;
+            /* 25% أصغر من الأساس (1rem → 0.75rem) */
+            font-weight: 600;
+            text-decoration: none;
+            color: #1e2a3a;
+            transition: 0.2s;
+            box-shadow: 0 2px 8px rgba(230, 57, 70, 0.08);
+            cursor: pointer;
+            line-height: 1.4;
+        }
+        .signature-card:hover {
+            transform: scale(1.03);
+            border-color: #b71c1c;
+            box-shadow: 0 4px 14px rgba(230, 57, 70, 0.15);
+        }
+        .signature-card .name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #1e2a3a;
+        }
+        .signature-card .title {
+            font-size: 0.65rem;
+            opacity: 0.75;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        /* إزالة كل الألوان باستثناء الإطار الأحمر – كما طُلب */
+        .signature-card::before,
+        .signature-card::after {
+            display: none !important;
+        }
+
+        /* responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            .header h1 {
+                font-size: 20px;
+            }
+            .header img {
+                height: 50px;
+            }
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .controls .filter-group {
+                margin-right: 0;
+                flex-wrap: wrap;
+            }
+            .controls .filter-group select {
+                min-width: 120px;
+                flex: 1;
+            }
+            .table-wrap {
+                font-size: 12px;
+            }
+            th,
+            td {
+                padding: 8px 6px;
+            }
+            .alert-box {
+                font-size: 16px;
+                min-width: 60px;
+                padding: 4px 8px;
+            }
+            .col-days {
+                font-size: 14px;
+            }
+            .input-threshold {
+                width: 60px;
+                font-size: 12px;
+                padding: 4px 4px;
+            }
+            .signature-card {
+                font-size: 0.7rem;
+            }
+        }
+        @media print {
+            .controls,
+            .btn-reset,
+            .input-threshold,
+            .filter-group select {
+                display: none !important;
+            }
+            .signature-card {
+                border-color: #e63946 !important;
+            }
+            body {
+                background: #fff;
+                padding: 10px;
+            }
+            .container {
+                box-shadow: none;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="app">
+
+        <!-- HEADER -->
+        <div class="header">
+            <img src="https://i.postimg.cc/NM2zJWZD/NAIF-LOGO.jpg" alt="شعار نايف" onerror="this.style.display='none'">
+            <div class="title-group">
+                <h1>
+                    مراقبة صلاحية المنتجات
+                    <small>شركة نايف للأغذية ذ.م.م &bull; NAIF FOOD CO. W.L.L.</small>
+                </h1>
+            </div>
+            <div class="sub">
+                <strong>تحديث فوري</strong> &bull; <span id="currentDate"></span>
+            </div>
+        </div>
+
+        <!-- CONTROLS -->
+        <div class="controls">
+            <div class="filter-group">
+                <label>📋 التصنيف:
+                    <select id="filterGroup" onchange="renderTable()">
+                        <option value="all">الكل</option>
+                    </select>
+                </label>
+                <label>🔍 بحث:
+                    <input type="text" id="searchInput" placeholder="اسم أو كود..." oninput="renderTable()" style="padding:6px 12px;border:1px solid #d0d8e3;border-radius:8px;font-size:14px;min-width:140px;">
+                </label>
+            </div>
+            <span class="badge-count" id="countBadge">0 منتج</span>
+            <button class="btn-reset" onclick="resetThresholds()">↺ إعادة ضبط التنبيهات</button>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-wrap">
+            <table id="productTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>التصنيف</th>
+                        <th>كود الصنف</th>
+                        <th style="text-align:right;">اسم الصنف</th>
+                        <th>تاريخ الإنتاج</th>
+                        <th>تاريخ الانتهاء</th>
+                        <th>الأيام المتبقية</th>
+                        <th>التنبيه</th>
+                        <th>تنبيه قبل (يوم)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- يتم تعبئته بواسطة JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- FOOTER + SIGNATURE -->
+        <div class="footer">
+            <div class="update-info">
+                <span>🔄 يتم التحديث تلقائياً &bull; آخر تحديث: <span id="lastUpdate"></span></span>
+            </div>
+            <!-- التوقيع المصغر 25% ، بدون ألوان ، إطار أحمر فقط -->
+            <a href="https://yasser-q8.github.io/myprofile/#" class="signature-card" target="_blank" rel="noopener noreferrer">
+                <div class="name">Yasser Elkhateeb</div>
+                <div class="title">مطور البرنامج 67011143</div>
+            </a>
+        </div>
+
+    </div>
+
+    <script>
+        // ============================================================
+        //  1.  البيانات المستوردة من ملف Excel (جميع المنتجات مع مجموعاتها)
+        //     مع إضافة تواريخ صلاحية افتراضية (Production & Expiry)
+        // ============================================================
+
+        const rawProducts = [
+            // A-FROZEN(-18°C)
+            { group: "A-FROZEN(-18°C)", code: "A1007", name: "Beef Burger Big(برجر لحم كبير)" },
+            { group: "A-FROZEN(-18°C)", code: "A1008", name: "Beef Burger Small(برجر لحم صغير)" },
+            { group: "A-FROZEN(-18°C)", code: "A1009", name: "Butter Finger(زبدة اصابع)" },
+            { group: "A-FROZEN(-18°C)", code: "A1010", name: "Butter Portion ( زبدة بورشن)" },
+            { group: "A-FROZEN(-18°C)", code: "L1041", name: "Cheese Cake Snickers (تشيز كيك سنيكرز)" },
+            { group: "A-FROZEN(-18°C)", code: "A1016", name: "Cheese Cake Strawberry (تشيز كيك فراولة)" },
+            { group: "A-FROZEN(-18°C)", code: "A1004", name: "Chicken Burger Small  ( برجر دجاج صغير)" },
+            { group: "A-FROZEN(-18°C)", code: "A1006", name: "Chicken Nuggets( ناجيت تمبورا)" },
+            { group: "A-FROZEN(-18°C)", code: "A1001", name: "French Fries 6×6 LW ( شبس لامب وستون)" },
+            { group: "A-FROZEN(-18°C)", code: "A1011", name: "FRZ Paratha ( شباتي براتا)" },
+            { group: "A-FROZEN(-18°C)", code: "A1020", name: "McCain Hashbrown (بطاط هاش براون مثلث)" },
+            { group: "A-FROZEN(-18°C)", code: "A1013", name: "Mozzarella shd cheese(جبنة موزريلا)" },
+            { group: "A-FROZEN(-18°C)", code: "A1003", name: "Mozzarella Stick(اصابع مودزريلا)" },
+            { group: "A-FROZEN(-18°C)", code: "A1002", name: "Onion Rings( حلقات بصل)" },
+            { group: "A-FROZEN(-18°C)", code: "A1014", name: "Twister Fries LW (بطاط حلزونية تويستر)" },
+            // B-FOOD ITEMS
+            { group: "B-FOOD ITEMS", code: "B1007", name: "Basmati Rice( ارزبسمتى)" },
+            { group: "B-FOOD ITEMS", code: "B1019", name: "BBQ sauce Gal / باربيكيو صوص جالون" },
+            { group: "B-FOOD ITEMS", code: "B2029", name: "Black Olives sliced  ( زيتون اسود شرائح)" },
+            { group: "B-FOOD ITEMS", code: "B2043", name: "Cheddar Cheese Sauce (جبنة شيدر صوص)" },
+            { group: "B-FOOD ITEMS", code: "B1002", name: "Cheese slice( جبنة شرائح)" },
+            { group: "B-FOOD ITEMS", code: "B1021", name: "Chilli Mayonnaise (مايونيز بالشطة)" },
+            { group: "B-FOOD ITEMS", code: "B1022", name: "Corn Banko Crispy(بانكو ذرة كرسبي)" },
+            { group: "B-FOOD ITEMS", code: "B1008", name: "Corn Oil(زيت ذرة)" },
+            { group: "B-FOOD ITEMS", code: "B1016", name: "Cucumber Pickle-Shawrma(مخلل خيار زهرة -شاورما)" },
+            { group: "B-FOOD ITEMS", code: "B1023", name: "Dates in Packet  ( تمر باكيتات)" },
+            { group: "B-FOOD ITEMS", code: "B2053", name: "Dill Pickle slice( خيار مخلل شرائح)" },
+            { group: "B-FOOD ITEMS", code: "B2035", name: "Dry Raisin(زبيب كشمش)" },
+            { group: "B-FOOD ITEMS", code: "B2045", name: "Jam Assorted( مربي )" },
+            { group: "B-FOOD ITEMS", code: "B1005", name: "Ketchup Gal( كاتشب جالون)" },
+            { group: "B-FOOD ITEMS", code: "B1004", name: "Ketchup Sachets(كاتشب بورشن نايف)" },
+            { group: "B-FOOD ITEMS", code: "B2030", name: "Labneh  ( لبنة)" },
+            { group: "B-FOOD ITEMS", code: "B1011", name: "Lipton Tea Bags(شاى ليبتون باكيت)" },
+            { group: "B-FOOD ITEMS", code: "B1012", name: "Maggi Cubes-Chicken(ماجي مكعبات دجاج)" },
+            { group: "B-FOOD ITEMS", code: "B1003", name: "Mayonnaise(مايونيز)" },
+            { group: "B-FOOD ITEMS", code: "B2041", name: "Milk Portion  ( حليب بورشن)" },
+            { group: "B-FOOD ITEMS", code: "B1006", name: "Olive Oil( زيت زيتون)" },
+            { group: "B-FOOD ITEMS", code: "B1020", name: "Peri Peri Sauce (صلصة البيري بيري)" },
+            { group: "B-FOOD ITEMS", code: "B2036", name: "Pizza Sauce(صوص بيتزا)" },
+            { group: "B-FOOD ITEMS", code: "B1017", name: "Ranch Dressing(صلصة رانش)" },
+            { group: "B-FOOD ITEMS", code: "B1009", name: "Salt  ( ملح طعام)" },
+            { group: "B-FOOD ITEMS", code: "B1010", name: "Salt Sachets( ملح بورشن)" },
+            { group: "B-FOOD ITEMS", code: "B1001", name: "Shortening  ( شورتنج امريكي شد 22.680ك)" },
+            { group: "B-FOOD ITEMS", code: "B1025", name: "Special Burger Sauce(صلصة البرجر الخاصة)" },
+            { group: "B-FOOD ITEMS", code: "B2001", name: "Sugar Sachets(سكر بورشن)" },
+            { group: "B-FOOD ITEMS", code: "B10566", name: "Sweet Chilli Sauce Gal (صلصة الفلفل الحلو جالون)" },
+            { group: "B-FOOD ITEMS", code: "B2054", name: "sweet corn( ذرة حب )" },
+            { group: "B-FOOD ITEMS", code: "B1024", name: "Swiss Cheese slices(جبنة سويسرية ابيض شرائح)" },
+            // C-BEVERAGES
+            { group: "C-BEVERAGES", code: "C1005", name: "Aquafina Water 600ml  ( مياة أكوافينا صغير)" },
+            { group: "C-BEVERAGES", code: "C1003", name: "Pepsi 1.25 Ltr  ( بيبسى عائلى)" },
+            { group: "C-BEVERAGES", code: "C1004", name: "Pepsi 2.25 Ltr( بيبسى عائلى)" },
+            { group: "C-BEVERAGES", code: "C1001", name: "Pepsi BIB Syrup( بيبسي ماكينة)" },
+            { group: "C-BEVERAGES", code: "C1002", name: "Pepsi Can 250ml(بيبسى علب250 م)" },
+            { group: "C-BEVERAGES", code: "C1006", name: "Shireen Juice(عصيرشيرين)" },
+            // D-SPICES
+            { group: "D-SPICES", code: "D2036", name: "Baraka Nigella seeds( حبة البركة )" },
+            { group: "D-SPICES", code: "D1002", name: "Black Pepper Sachets (فلفل اسود بورشن)" },
+            { group: "D-SPICES", code: "D1001", name: "Red Chilli Powder(فلفل احمر بودرة)" },
+            // E-BREAD & PASTRY
+            { group: "E-BREAD & PASTRY", code: "E1001", name: "Arabic Bread (خبز عربى شد3)" },
+            { group: "E-BREAD & PASTRY", code: "E1012", name: "Arabic Bread (خبز عربى للشاورما)" },
+            { group: "E-BREAD & PASTRY", code: "E1023", name: "Brioche Bun Dbl Glaze(خبز بريوش دبل جليز)" },
+            { group: "E-BREAD & PASTRY", code: "E1003", name: "Hamburger Bread Big  ( خبز همبرجر كبير)" },
+            { group: "E-BREAD & PASTRY", code: "E1002", name: "Hamburger Bread Small  ( خبز همبرجر صغير)" },
+            { group: "E-BREAD & PASTRY", code: "E1005", name: "Magnum Bread( خبز ملتي تيست)" },
+            { group: "E-BREAD & PASTRY", code: "E1007", name: "Potato Burger Bun( خبز همبرجر بطاط)" },
+            { group: "E-BREAD & PASTRY", code: "E1006", name: "Protein Bun(خبز همبرجر بروتين)" },
+            { group: "E-BREAD & PASTRY", code: "E1010", name: "Round Croissant (خبز كروسون مدور)" },
+            { group: "E-BREAD & PASTRY", code: "E1013", name: "Slider Bun (خبز سلايدر )" },
+            { group: "E-BREAD & PASTRY", code: "E1014", name: "Tannur Bread(خبز تنور)" },
+            { group: "E-BREAD & PASTRY", code: "E1008", name: "Tortella Bread white 20cm (خبز تورتيلا راب)" },
+            // F-CHEMICALS & CLEANING
+            { group: "F-CHEMICALS & CLEANING", code: "F1004", name: "All Purpose Liq  ( صابون سائل)" },
+            { group: "F-CHEMICALS & CLEANING", code: "F1009", name: "Clorox  ( كلوركس)" },
+            { group: "F-CHEMICALS & CLEANING", code: "F1008", name: "Dettol  ( ديتول)" },
+            { group: "F-CHEMICALS & CLEANING", code: "F1014", name: "Floor Brush  ( بروش ارضية)" },
+            { group: "F-CHEMICALS & CLEANING", code: "F1002", name: "Garbage Bag Black  ( اكياس قمامة اسود)" },
+            { group: "F-CHEMICALS & CLEANING", code: "F1011", name: "Glass Cleaner  ( منظف زجاج)" },
+            { group: "F-CHEMICALS & CLEANING", code: "F1010", name: "Hand Sanitizer  ( معقم ايدى)" },
+            { group: "F-CHEMICALS & CLEANING", code: "F1005", name: "Hand Soap Liquid  ( صابون سائل لليدين)" },
+            { group: "F-CHEMICALS & CLEANING", code: "F1012", name: "Insect Killer Spray  ( قاتل حشرات)" },
+            { group: "F-CHEMICALS & CLEANING", code: "F1019", name: "J-Cloth  ( فوطة طاولة)" },
+            { group: "F-CHEMICALS & CLEANING", code: "F1001", name: "Maxi Roll  ( تواليت رول)" },
+            { group: "F-CHEMICALS & CLEANING", code: "F1017", name: "Mop Cotton W/Stick (موب قطن كامل مع عصا)" },
+            { group: "F-CHEMICALS & CLEANING", code: "F1018", name: "Mop Head  ( موب قطن)" },
+            { group: "F-CHEMICALS & CLEANING", code: "F2002", name: "M-Tork / رول تواليت مقطوع كبير" },
+            { group: "F-CHEMICALS & CLEANING", code: "F1006", name: "Oven Cleaner Liq  ( منظف شواية)" },
+            { group: "F-CHEMICALS & CLEANING", code: "F1016", name: "Sponge  ( اسفنج)" },
+            { group: "F-CHEMICALS & CLEANING", code: "F2001", name: "Toilet Roll Small / رول حمام صغير" },
+            { group: "F-CHEMICALS & CLEANING", code: "F2003", name: "T-Tork / رول تواليت مقطوع صغير" },
+            { group: "F-CHEMICALS & CLEANING", code: "F1013", name: "Water Squeezer  ( جلدة ارضية)" },
+            // G-NON FOOD
+            { group: "G-NON FOOD", code: "G2057", name: "Almn Platter / صحن المونيوم (OV2)" },
+            { group: "G-NON FOOD", code: "G1046", name: "Alu Container#83190(ماعون المونيوم كبير)" },
+            { group: "G-NON FOOD", code: "G1021", name: "Alu foil wrap Big Fillet ( ورق سندوتش سلفر كبير-نايف)" },
+            { group: "G-NON FOOD", code: "G1020", name: "Alu foil wrap Sandwich ( ورق سندوتش سلفر-نايف)" },
+            { group: "G-NON FOOD", code: "G1019", name: "Alu foil wrap Shawarma(ورق سلفر للشاورما)" },
+            { group: "G-NON FOOD", code: "G1043", name: "Aluminium Container 3 dept ( ماعون كبدة)" },
+            { group: "G-NON FOOD", code: "G1038", name: "Aluminium Foil  ( المونيوم فويل)" },
+            { group: "G-NON FOOD", code: "G1014", name: "Aluminum Container#83120  (ماعون المونيوم تكا+بنت الديك)" },
+            { group: "G-NON FOOD", code: "G1013", name: "Big Fillet Sandwich Box(علب بيج فيلية ساندويش)" },
+            { group: "G-NON FOOD", code: "G2024", name: "Break Fast Container 5CP (ماعون ميكرويف للفطار)" },
+            { group: "G-NON FOOD", code: "G1018", name: "Burger Box  ( علب برجر+فيلية)" },
+            { group: "G-NON FOOD", code: "G1050", name: "Charcoal  ( فحم)" },
+            { group: "G-NON FOOD", code: "G1061", name: "Clear Container 2 Oz Hing lid (ماعون شفاف 2 اونص مع غطاء)" },
+            { group: "G-NON FOOD", code: "G1024", name: "Cling Film Roll  ( كلينج فيلم)" },
+            { group: "G-NON FOOD", code: "G1007", name: "Dinner Box  ( علب دينر)" },
+            { group: "G-NON FOOD", code: "G1039", name: "Disposable Plst Apron  ( مريول نايلون)" },
+            { group: "G-NON FOOD", code: "G1060", name: "Exp Date Sticker Naif (استيكر تاريخ نايف)" },
+            { group: "G-NON FOOD", code: "G1001", name: "Family Meal Bucket 170oz  ( سطل وجبة فاميلي)" },
+            { group: "G-NON FOOD", code: "G1004", name: "Filter Bag Big( فلتر قماش كبير)" },
+            { group: "G-NON FOOD", code: "G1005", name: "Filter Bag Small( فلتر قماش سغر)" },
+            { group: "G-NON FOOD", code: "G1006", name: "French fries Box-Lrg (علب شيبسى كبير)" },
+            { group: "G-NON FOOD", code: "G1010", name: "French Fries Box-Med(علب شيبسي وسط)" },
+            { group: "G-NON FOOD", code: "G1008", name: "French Fries Box-Small(علب شيبسي صغير)" },
+            { group: "G-NON FOOD", code: "G1040", name: "Hair Net  ( كاب قطن)" },
+            { group: "G-NON FOOD", code: "G2023", name: "Hot Tea Cup 8oz  (جلاس ورق للشاي)" },
+            { group: "G-NON FOOD", code: "G1065", name: "Kids Fries Pouch - علب شيبس اطفال شد 1550" },
+            { group: "G-NON FOOD", code: "G1009", name: "Kids Meal Box  ( علب وجبة أطفال)" },
+            { group: "G-NON FOOD", code: "G1023", name: "Napkin Plain 30*30  ( نابكن سادة)" },
+            { group: "G-NON FOOD", code: "G1022", name: "N-Box  (  بوكس- N)" },
+            { group: "G-NON FOOD", code: "G2028", name: "Paper Bag #1 Naif  كيس ورق رقم 1 نايف-شد 10كيلو" },
+            { group: "G-NON FOOD", code: "G1015", name: "Paper Bag #3 Naif( كيس ورق رقم 3نايف)" },
+            { group: "G-NON FOOD", code: "G1002", name: "Paper bag W/H -Small (شنطة ورق نايف-صغير)" },
+            { group: "G-NON FOOD", code: "G1017", name: "Paper Bag W/H-Big  ( شنطة ورق نايف كبير)" },
+            { group: "G-NON FOOD", code: "G1054", name: "Paper Cup 16oz Naif(ماعون ورق 16 اونص نايف)" },
+            { group: "G-NON FOOD", code: "G1068", name: "Paper Cup 6oz with lid /  ماعون ورق 6 اونص للذرة" },
+            { group: "G-NON FOOD", code: "G2033", name: "Paper Face Mask  (كمامة ورق)" },
+            { group: "G-NON FOOD", code: "G1003", name: "Paper Plate Naif  ( ماعون ورق نايف)" },
+            { group: "G-NON FOOD", code: "G1059", name: "Pepsi Carrier 4 Cup(حاملات 4 كوب)" },
+            { group: "G-NON FOOD", code: "G1057", name: "Pepsi Glass 24 oz(جلاس بيبسى 24اونص)" },
+            { group: "G-NON FOOD", code: "G1055", name: "Pepsi Glass16 oz(جلاس بيبسى 16اونص)" },
+            { group: "G-NON FOOD", code: "G1058", name: "Pepsi Glass-32oz  ( جلاس بيبسى 32اونص)" },
+            { group: "G-NON FOOD", code: "G1011", name: "pizza box 21*21 (علب بيتزا 21*21 )" },
+            { group: "G-NON FOOD", code: "G1030", name: "Place Mat Naif  ( بلاسمات نايف)" },
+            { group: "G-NON FOOD", code: "G1032", name: "Plastic Bag 50*50 Naif ( اكياس نايلون 50*50 نايف)" },
+            { group: "G-NON FOOD", code: "G1035", name: "Plastic Bag 50*50 Plain  ( اكياس علاقة صغير)" },
+            { group: "G-NON FOOD", code: "G1033", name: "Plastic Bag 50*80 Transp  ( اكياس نايلون شفاف)" },
+            { group: "G-NON FOOD", code: "G2045", name: "Plastic Bag 65*65 Plain(اكياس علاقة كبير 65*65)" },
+            { group: "G-NON FOOD", code: "G1028", name: "Plastic Fork Blk HD  ( شوكة اسود)" },
+            { group: "G-NON FOOD", code: "G1025", name: "Plastic Glass 7oz ( جلاس ماء)" },
+            { group: "G-NON FOOD", code: "G1067", name: "Plastic Knife /سكينة بلاستيك" },
+            { group: "G-NON FOOD", code: "G1027", name: "Plastic Spoon  ( ملاعق بلاستيك)" },
+            { group: "G-NON FOOD", code: "G2027", name: "Plastic Tea Spoon  ( ملاعق شاى)" },
+            { group: "G-NON FOOD", code: "G1041", name: "Plst Clr Container 2oz( ماعون ثوم مجانى)" },
+            { group: "G-NON FOOD", code: "G1069", name: "Plst Container 150ml /علب صوصات 150م" },
+            { group: "G-NON FOOD", code: "G1062", name: "Plst Sushi Contnr SCF3/ماعون سوشي أسود صغير-شاورما" },
+            { group: "G-NON FOOD", code: "G1051", name: "Pointed Straws  ( شاليمون ملون للعصير)" },
+            { group: "G-NON FOOD", code: "G1012", name: "Ppr box for Shawaya  ( علبه كرتون للشوايه)" },
+            { group: "G-NON FOOD", code: "G2063", name: "Puri Box 300 علب بوري" },
+            { group: "G-NON FOOD", code: "G2054", name: "Rice Bowl Lid 105 Oz Naif Food (ماعون ار" },
+            { group: "G-NON FOOD", code: "G1045", name: "Round Sticker Naif(استيكر مدور نايف)" },
+            { group: "G-NON FOOD", code: "G1037", name: "Sandwich Paper Wrap-Plain  ( ورق ساندوش عادى)" },
+            { group: "G-NON FOOD", code: "G2059", name: "Slider box (علبة سلايدر )" },
+            { group: "G-NON FOOD", code: "G2068", name: "Snack Box /علبة سناك" },
+            { group: "G-NON FOOD", code: "G1029", name: "Straw Wrapped  ( شاليمون مغلف)" },
+            { group: "G-NON FOOD", code: "G2060", name: "surface sanitizer (مطهر و معقم 650 مل )" },
+            { group: "G-NON FOOD", code: "G1053", name: "Thrift Meal Bucket 130oz  ( سطل ثرفت باك)" },
+            { group: "G-NON FOOD", code: "G1048", name: "Tooth Picks  ( نكاشات اسنان)" },
+            { group: "G-NON FOOD", code: "G1052", name: "Toys  ( العاب اطفال)" },
+            { group: "G-NON FOOD", code: "G1066", name: "Transp Cheese Cake Box /علب شفاف تشيز كيك" },
+            { group: "G-NON FOOD", code: "G2069", name: "Transp Plst Glass 16oz (جلاس شفاف 16 اونص)" },
+            { group: "G-NON FOOD", code: "G1036", name: "Trnsp Plastic Gloves  (جلفز بلاستيك)" },
+            { group: "G-NON FOOD", code: "G1042", name: "Vinyl Gloves(جلفز طبى الفينيل)" },
+            { group: "G-NON FOOD", code: "G1044", name: "Wax For Charcoal  ( مشعل فحم)" },
+            { group: "G-NON FOOD", code: "G1026", name: "Wax Paper Roll(ريكولاينر)" },
+            // H-STATIONARY
+            { group: "H-STATIONARY", code: "H1001", name: "A4 Paper  ( A4-ورق طابعة)" },
+            { group: "H-STATIONARY", code: "H1004", name: "Cash Roll 2Ply  ( رول ماكينة مزدوج)" },
+            { group: "H-STATIONARY", code: "H1006", name: "Cash Roll Delivery( رول ماكينة ديليفري)" },
+            { group: "H-STATIONARY", code: "H1005", name: "Compt Toner 85A  (85 A حبر طابعه)" },
+            { group: "H-STATIONARY", code: "H1003", name: "Epson Ribbon ERC38  ( شريط ماكينة صغير)" },
+            { group: "H-STATIONARY", code: "H1002", name: "Thermal Cash Roll  ( رول ماكينة كاش العصيمى)" },
+            // J-EQUIPMENT & SPARES
+            { group: "J-EQUIPMENT & SPARES", code: "J1002", name: "Display Bulb 40W  (لمبه دسيبليه 40واط)" },
+            { group: "J-EQUIPMENT & SPARES", code: "J1006", name: "Energy Saver Bulb  ( لمبه توفيرالطاقه)" },
+            { group: "J-EQUIPMENT & SPARES", code: "J1004", name: "Fl Tube Insect Killer 45CM  ( لمبه قاتله حشرات)" },
+            { group: "J-EQUIPMENT & SPARES", code: "J1005", name: "Fluorescent Tube 2ft ( لمبه نيون 2 قدم)" },
+            { group: "J-EQUIPMENT & SPARES", code: "J1001", name: "Halogen lamp 500W  (لمبه كشاف)" },
+            { group: "J-EQUIPMENT & SPARES", code: "J1003", name: "Heat lamp 100W  ( لمبه شيبس)" },
+            { group: "J-EQUIPMENT & SPARES", code: "J1009", name: "Water Filter (شمعه فلتر )" },
+            // KITCHEN-APPETIZERS
+            { group: "KITCHEN-APPETIZERS", code: "K2054", name: "BBQ sauce / باربيكيو صوص" },
+            { group: "KITCHEN-APPETIZERS", code: "K2038", name: "Cheddar Cheese Portion (500Grm صوص جبنة شيدر)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2044", name: "Cheddar Cheese Sauce Spicy / صوص جبنة فلفل" },
+            { group: "KITCHEN-APPETIZERS", code: "K2005", name: "Cole Slaw Big  (كول سلو كبير)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2006", name: "Cole Slaw Small  ( كول سلو صغير)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2011", name: "Eggs  ( بيض)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2035", name: "Fattoush Salad Big  ( سلطة فتوش كبيرة)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2010", name: "Flour Dough  (طحين عادي)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2039", name: "Fresh Orange Juice ( عصير برتقال طازج-خالي من السكر والمواد الحاف)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2017", name: "Garlic Paste  ( ثوم شاورما مجهز)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2018", name: "Garlic Paste 100gm  (ثوم 100 غرام)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2053", name: "Garlic Paste 150gm  (ثوم 150 غرام)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2019", name: "Garlic Paste 30gm  ( ثوم 30 غرام)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2046", name: "Honey Mustard K (صلصة عسل الخردل)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2020", name: "Hummus large ( ماعون حمص كبير)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2009", name: "Laban Naif Small (لبن نايف صغير )" },
+            { group: "KITCHEN-APPETIZERS", code: "K2021", name: "Lemon Sauce  ( صوص ليمون)" },
+            { group: "KITCHEN-APPETIZERS", code: "k2047", name: "MABOUG SAUCE (صوص معبوج)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2045", name: "Mayo Ketchup Sauce / صوص مايو الكاتشب" },
+            { group: "KITCHEN-APPETIZERS", code: "K2032", name: "Mix Spices for Rice ( بهارات مشكلة للارز)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2026", name: "Mix-Flour Chicken Seasoning ( طحين بهارات فرايد)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2022", name: "Mutabbal Large  ( ماعون متبل كبير)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2050", name: "Pink Sauce (بينك صوص)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2007", name: "Puri  ( بوري)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2008", name: "Rice&Milk Pudding ( أرز بالحليب)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2033", name: "Rocca Salad Big  ( سلطة جرجيركبيرة)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2031", name: "Sauce for Biryani Rice  ( صوص الارز)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2049", name: "Spices for French fries /خليط توابل للبطاط" },
+            { group: "KITCHEN-APPETIZERS", code: "K2055", name: "Sweet Chilli Sauce (صلصة الفلفل الحلو )" },
+            { group: "KITCHEN-APPETIZERS", code: "K2052", name: "Sweet Garlic Sauce / سويت جارليك صوص" },
+            { group: "KITCHEN-APPETIZERS", code: "K2034", name: "Taboulla Salad Big  ( سلطة تبولة كبيرة)" },
+            { group: "KITCHEN-APPETIZERS", code: "K2036", name: "Vegitable Salad Big  ( سلطة خضراء كبيرة)" },
+            // KITCHEN-MEAT
+            { group: "KITCHEN-MEAT", code: "K1014", name: "Bint Al-Deek  ( بنت الديك)" },
+            { group: "KITCHEN-MEAT", code: "K1016", name: "Ch.Finger Fillet Spicy  ( اصابع فيليه فلفل)" },
+            { group: "KITCHEN-MEAT", code: "K1035", name: "Chicken Big Fillet  ( بيج فيلية)" },
+            { group: "KITCHEN-MEAT", code: "K1036", name: "Chicken Big Fillet Spicy  ( بيج فيلية فلفل)" },
+            { group: "KITCHEN-MEAT", code: "K1007", name: "Chicken Drum Stick ( درام ستيك)" },
+            { group: "KITCHEN-MEAT", code: "K1008", name: "Chicken Fillet  ( فيليه عادي)" },
+            { group: "KITCHEN-MEAT", code: "K1009", name: "Chicken Fillet Spicy  ( فيليه فلفل)" },
+            { group: "KITCHEN-MEAT", code: "K1015", name: "Chicken Finger Fillet  ( اصابع فيليه)" },
+            { group: "KITCHEN-MEAT", code: "K1012", name: "Chicken Fried  ( دجاج فرايد عادي)" },
+            { group: "KITCHEN-MEAT", code: "K1013", name: "Chicken Fried Spicy  (دجاج فرايد فلفل)" },
+            { group: "KITCHEN-MEAT", code: "K1002", name: "Chicken Kabab ( كباب دجاج)" },
+            { group: "KITCHEN-MEAT", code: "K1001", name: "Chicken Shawarma  ( شاورما دجاج)" },
+            { group: "KITCHEN-MEAT", code: "K1071", name: "Chicken Small Wings Nor  جناح صغير عادي" },
+            { group: "KITCHEN-MEAT", code: "K1072", name: "Chicken Small Wings Spicy  جناح صغير فلفل" },
+            { group: "KITCHEN-MEAT", code: "K1006", name: "Chicken Tikka ( دجاج تكا عادي)" },
+            { group: "KITCHEN-MEAT", code: "K1004", name: "Chicken Tikka Brest ( تكا صدور)" },
+            { group: "KITCHEN-MEAT", code: "K1005", name: "Chicken Tikka Thigh  (تكا فخذ)" },
+            { group: "KITCHEN-MEAT", code: "K1010", name: "Chicken Wings  جناح متبل" },
+            { group: "KITCHEN-MEAT", code: "K1039", name: "Drumstic whole Fried  ( وصلة دجاج عادي)" },
+            { group: "KITCHEN-MEAT", code: "K1040", name: "Drumstick whole Fried spicy  ( وصلة دجاج فلفل)" },
+            { group: "KITCHEN-MEAT", code: "K1073", name: "Fillet Pizza /فيلية بيتزا عادي" },
+            { group: "KITCHEN-MEAT", code: "K1075", name: "Fillet Pizza Grill / فيلية بيتزا مشوي" },
+            { group: "KITCHEN-MEAT", code: "K1074", name: "Fillet Pizza Spicy / فيلية بيتزا فلفل" },
+            { group: "KITCHEN-MEAT", code: "K1070", name: "Fresh Burger Chickens برجر دجاج طازج" },
+            { group: "KITCHEN-MEAT", code: "K1044", name: "Grill Chicken Pc -Multi Taste ( قطع دجاج جرل صغير)" },
+            { group: "KITCHEN-MEAT", code: "K1049", name: "Grilled Chicken Fillet  فيليه مشوي" },
+            { group: "KITCHEN-MEAT", code: "K1076", name: "Grilled Chicken Pc / قطع دجاج مشويه" },
+            { group: "KITCHEN-MEAT", code: "K1017", name: "Grilled Quils (فري مشوي)" },
+            { group: "KITCHEN-MEAT", code: "K120199", name: "Half Boneless chicken -نصف دجاجة مسحب" },
+            { group: "KITCHEN-MEAT", code: "K1042", name: "Happy Chicken Pc  ( قطع دجاح فرايد صغير عادي)" },
+            { group: "KITCHEN-MEAT", code: "K1043", name: "Happy Chicken Pc-Spicy  ( قطع دجاح فرايد صغير فلفل)" },
+            { group: "KITCHEN-MEAT", code: "K1011", name: "Rooster Junior  ( فروج نايف)" },
+            { group: "KITCHEN-MEAT", code: "K1020", name: "Royal Grilled Chicken (دجاج شواية ملكي)" },
+            { group: "KITCHEN-MEAT", code: "K1003", name: "Sish Tawouk  ( شيش طاووق)" },
+            // KITCHEN-VEGS & FRUITS
+            { group: "KITCHEN-VEGS & FRUITS", code: "K3039", name: "Capsicum Dice Cut/فلفل مقطع صغير" },
+            { group: "KITCHEN-VEGS & FRUITS", code: "K3005", name: "Carrots (جزر طازج)" },
+            { group: "KITCHEN-VEGS & FRUITS", code: "K3030", name: "Fresh Cucumber (خيار طازجة)" },
+            { group: "KITCHEN-VEGS & FRUITS", code: "K3012", name: "Fresh Lemons (ليمون طازج)" },
+            { group: "KITCHEN-VEGS & FRUITS", code: "K3014", name: "Fresh Oranges (برتقال طازج)" },
+            { group: "KITCHEN-VEGS & FRUITS", code: "K3017", name: "Green Capsicum (فلفل حلو)" },
+            { group: "KITCHEN-VEGS & FRUITS", code: "K3009", name: "Iceberg Lettuce (خس مدور)" },
+            { group: "KITCHEN-VEGS & FRUITS", code: "K3041", name: "Onion Dice Cut / بصل مقطع صغير" },
+            { group: "KITCHEN-VEGS & FRUITS", code: "K3011", name: "Onions White (بصل ابيض طازج)" },
+            { group: "KITCHEN-VEGS & FRUITS", code: "K3003", name: "Parsley  (بقدونس)" },
+            { group: "KITCHEN-VEGS & FRUITS", code: "K3002", name: "Tomatoes  ( طماطم)" },
+            // L-Naif Cafe
+            { group: "L-Naif Cafe", code: "L1031", name: "Balck berry Syrup (شراب التوت الأسود)" },
+            { group: "L-Naif Cafe", code: "L1007", name: "Barista Milk (حليب  باريستا )" },
+            { group: "L-Naif Cafe", code: "L1020", name: "Blueberry Syrup (شراب  التوت الازرق)" },
+            { group: "L-Naif Cafe", code: "L1034", name: "Brown Sugar Sachets(سكراسمر بورشن)" },
+            { group: "L-Naif Cafe", code: "L1030", name: "Caramel Sauce (صوص الكراميل)" },
+            { group: "L-Naif Cafe", code: "L1037", name: "Carnation Milk  ( حليب كرنييشن)" },
+            { group: "L-Naif Cafe", code: "L1040", name: "Cheese Cake Lotus(تشيز كيك لوتس)" },
+            { group: "L-Naif Cafe", code: "L1043", name: "Cheese Cake Oreo (تشيز كيك اوريو)" },
+            { group: "L-Naif Cafe", code: "L1042", name: "Cheese Cake Red Velvet(تشيز كيك ريد فالفيت)" },
+            { group: "L-Naif Cafe", code: "L1011", name: "Choco cookies Syrup (شراب شيكولا كوكيز)" },
+            { group: "L-Naif Cafe", code: "L1032", name: "Chocolate Powder ( شوكولات بودرة )" },
+            { group: "L-Naif Cafe", code: "L1005", name: "Cocoa Powder(كاكاو حليب بودر)" },
+            { group: "L-Naif Cafe", code: "L1033", name: "Condensed Milk (حليب مكثف)" },
+            { group: "L-Naif Cafe", code: "L1004", name: "Cuppucino Milk Powder (حليب كابتشينو بودر بريتزا )" },
+            { group: "L-Naif Cafe", code: "L1012", name: "Dark Choco Syrup(صوص شيكولا اسود)" },
+            { group: "L-Naif Cafe", code: "L1003", name: "Espresso beans (اسبرسو حب)" },
+            { group: "L-Naif Cafe", code: "L1002", name: "French Coffee (قهوة فرنسية)" },
+            { group: "L-Naif Cafe", code: "L1008", name: "Full Fat UHT Milk (حليب كامل الدسم )" },
+            { group: "L-Naif Cafe", code: "L1039", name: "Green tea Bags (شاي الأخضر باكيت)" },
+            { group: "L-Naif Cafe", code: "L1015", name: "Hazelnut Syrup (شراب البندق)" },
+            { group: "L-Naif Cafe", code: "L1009", name: "Low Fat Milk (حليب قليل الدسم )" },
+            { group: "L-Naif Cafe", code: "L1017", name: "Mojito Mint Syrup (شراب الموجيتو(النعناع)700ملل)" },
+            { group: "L-Naif Cafe", code: "L1016", name: "Mojito Raspberry syrup (شراب التوت البرى 700ملل)" },
+            { group: "L-Naif Cafe", code: "L1018", name: "Mojito Strawberry Syrup(ستروبرى موهيتو)" },
+            { group: "L-Naif Cafe", code: "L1006", name: "Nescafe (نسكافيه 200جرام)" },
+            { group: "L-Naif Cafe", code: "L1027", name: "paper 2Cup Carrier (حاملات كوبين)" },
+            { group: "L-Naif Cafe", code: "L1029", name: "Paper Bag Small Black (شنطه صغير بيد اسود)" },
+            { group: "L-Naif Cafe", code: "L1023", name: "Paper Cup 12oz Blk (جلاس ورق 12 اونص اسود)" },
+            { group: "L-Naif Cafe", code: "L1024", name: "Paper Cup 16oz Blk (جلاس ورق 16 اونص اسود)" },
+            { group: "L-Naif Cafe", code: "L1021", name: "Paper Cup Blk 4oz (جلاس ورق 4 اونص اسود)" },
+            { group: "L-Naif Cafe", code: "L1022", name: "paper Cup Blk 8oz (جلاس ورق 8 اونص اسود)" },
+            { group: "L-Naif Cafe", code: "L1019", name: "Passion Fruit Syrup (شراب بيشن فروت)" },
+            { group: "L-Naif Cafe", code: "L1028", name: "Straw Wrapped Black (شاليمون اسود)" },
+            { group: "L-Naif Cafe", code: "L1038", name: "Tea powder  ( شاي بودرة)" },
+            { group: "L-Naif Cafe", code: "L1025", name: "Transp Cup 14oz (جلاس شفاف 14 اونص)" },
+            { group: "L-Naif Cafe", code: "L1001", name: "Turkish Coffee (قهوة تركية)" },
+            { group: "L-Naif Cafe", code: "L1014", name: "Vanilla Syrup (شراب الفانيليا)" },
+            { group: "L-Naif Cafe", code: "L1010", name: "Whipped cream bottle (كريمة مخفوقة بوتل)" },
+            { group: "L-Naif Cafe", code: "L1035", name: "Wood Stirrers 14cm (نمامون الخشب 14 سم)" },
+            { group: "L-Naif Cafe", code: "L1036", name: "Wood Stirrers 21cm (نمامون الخشب 21 سم)" }
+        ];
+
+        // ============================================================
+        //  2.  إضافة تواريخ صلاحية (Production & Expiry) لكل صنف
+        //     بناءً على المجموعة
+        // ============================================================
+
+        function getShelfLife(group) {
+            if (group.includes('FROZEN')) return 730; // 2 سنة
+            if (group.includes('FOOD ITEMS')) return 365;
+            if (group.includes('BEVERAGES')) return 365;
+            if (group.includes('SPICES')) return 730;
+            if (group.includes('BREAD & PASTRY')) return 7; // أيام
+            if (group.includes('CHEMICALS')) return 1095; // 3 سنوات
+            if (group.includes('NON FOOD')) return 1825; // 5 سنوات
+            if (group.includes('STATIONARY')) return 1825;
+            if (group.includes('EQUIPMENT')) return 1825;
+            if (group.includes('KITCHEN-APPETIZERS')) return 90;
+            if (group.includes('KITCHEN-MEAT')) return 180;
+            if (group.includes('KITCHEN-VEGS')) return 10;
+            if (group.includes('Naif Cafe')) return 365;
+            return 365; // default
+        }
+
+        function randomDate(daysAgoMin, daysAgoMax) {
+            const now = new Date();
+            const daysAgo = Math.floor(Math.random() * (daysAgoMax - daysAgoMin + 1)) + daysAgoMin;
+            const d = new Date(now);
+            d.setDate(d.getDate() - daysAgo);
+            return d;
+        }
+
+        function formatDate(d) {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // بناء البيانات الكاملة
+        let products = rawProducts.map((p, index) => {
+            const shelf = getShelfLife(p.group);
+            // تاريخ الإنتاج: قبل 0–60 يوماً
+            const prod = randomDate(0, 60);
+            const exp = new Date(prod);
+            exp.setDate(exp.getDate() + shelf);
+            return {
+                id: index + 1,
+                group: p.group,
+                code: p.code,
+                name: p.name,
+                production: prod,
+                expiry: exp,
+                shelfDays: shelf,
+                threshold: 30 // افتراضي
+            };
+        });
+
+        // ============================================================
+        //  3.  دوال العرض والترتيب والفلترة
+        // ============================================================
+
+        function getDaysRemaining(expiry) {
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+            const exp = new Date(expiry);
+            exp.setHours(0, 0, 0, 0);
+            const diff = Math.ceil((exp - now) / (1000 * 60 * 60 * 24));
+            return diff;
+        }
+
+        function getAlertStatus(daysRemaining, threshold) {
+            if (daysRemaining < 0) return { css: 'expired', text: '⚠️ منتهي' };
+            if (daysRemaining <= threshold) return { css: 'danger', text: '🔴 ينتهي قريباً!' };
+            if (daysRemaining <= threshold + 15) return { css: 'warning', text: '🟡 قارب الانتهاء' };
+            return { css: 'safe', text: '✅ سليم' };
+        }
+
+        let currentFilter = 'all';
+        let searchTerm = '';
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            const filterGroup = document.getElementById('filterGroup');
+            const searchInput = document.getElementById('searchInput');
+
+            currentFilter = filterGroup.value;
+            searchTerm = searchInput.value.trim().toLowerCase();
+
+            // تجميع المنتجات مع الأيام المتبقية
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+
+            const enriched = products.map(p => {
+                const days = getDaysRemaining(p.expiry);
+                return { ...p, daysRemaining: days };
+            });
+
+            // فلتر
+            let filtered = enriched;
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(p => p.group === currentFilter);
+            }
+            if (searchTerm !== '') {
+                filtered = filtered.filter(p =>
+                    p.name.toLowerCase().includes(searchTerm) ||
+                    p.code.toLowerCase().includes(searchTerm) ||
+                    p.group.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            // ترتيب: الأيام المتبقية تصاعدياً (الأقرب أولاً)
+            filtered.sort((a, b) => a.daysRemaining - b.daysRemaining);
+
+            // تحديث العدد
+            document.getElementById('countBadge').textContent = `${filtered.length} منتج`;
+
+            // إنشاء الصفوف
+            let html = '';
+            filtered.forEach((p, idx) => {
+                const alert = getAlertStatus(p.daysRemaining, p.threshold);
+                const rowClass = p.daysRemaining < 0 ? 'row-expired' :
+                    p.daysRemaining <= p.threshold ? 'row-warning' : '';
+
+                html += `
+                    <tr class="${rowClass}">
+                        <td>${idx + 1}</td>
+                        <td><span class="col-group">${p.group}</span></td>
+                        <td class="col-code">${p.code}</td>
+                        <td class="col-name">${p.name}</td>
+                        <td class="col-date">${formatDate(p.production)}</td>
+                        <td class="col-date">${formatDate(p.expiry)}</td>
+                        <td class="col-days ${p.daysRemaining < 0 ? 'critical' : p.daysRemaining <= p.threshold ? 'warning' : 'good'}">
+                            ${p.daysRemaining < 0 ? 'منتهي' : p.daysRemaining + ' يوم'}
+                        </td>
+                        <td>
+                            <span class="alert-box ${alert.css}">${alert.text}</span>
+                        </td>
+                        <td>
+                            <input type="number" class="input-threshold" 
+                                   value="${p.threshold}" 
+                                   min="0" max="365"
+                                   data-id="${p.id}"
+                                   onchange="updateThreshold(${p.id}, this.value)">
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html || `<tr><td colspan="9" style="padding:40px;text-align:center;color:#6b7a8f;">لا توجد منتجات مطابقة</td></tr>`;
+
+            // تحديث وقت آخر تحديث
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('ar-EG', { hour12: false });
+        }
+
+        // ============================================================
+        //  4.  تحديث قيمة التنبيه لكل منتج
+        // ============================================================
+
+        function updateThreshold(id, value) {
+            const val = parseInt(value, 10);
+            if (isNaN(val) || val < 0) return;
+            const product = products.find(p => p.id === id);
+            if (product) {
+                product.threshold = val;
+                renderTable(); // إعادة الرسم لتحديث التنبيهات
+            }
+        }
+
+        // ============================================================
+        //  5.  إعادة ضبط جميع التنبيهات إلى 30
+        // ============================================================
+
+        function resetThresholds() {
+            products.forEach(p => p.threshold = 30);
+            renderTable();
+        }
+
+        // ============================================================
+        //  6.  ملء قائمة التصنيفات في الفلتر
+        // ============================================================
+
+        function populateGroupFilter() {
+            const select = document.getElementById('filterGroup');
+            const groups = [...new Set(products.map(p => p.group))].sort();
+            groups.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g;
+                opt.textContent = g;
+                select.appendChild(opt);
+            });
+        }
+
+        // ============================================================
+        //  7.  تهيئة التاريخ الحالي
+        // ============================================================
+
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ar-EG', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            weekday: 'long'
+        });
+
+        // ============================================================
+        //  8.  التشغيل النهائي
+        // ============================================================
+
+        populateGroupFilter();
+        renderTable();
+
+        // إعادة الرسم عند تغيير الفلتر أو البحث (يتم استدعاؤها عبر oninput/onchange)
+        // تم ربطها في HTML
+
+        // ============================================================
+        //  9.  (اختياري) تحديث تلقائي كل 60 ثانية
+        // ============================================================
+
+        setInterval(() => {
+            renderTable();
+        }, 60000);
+    </script>
+
+</body>
+</html>
