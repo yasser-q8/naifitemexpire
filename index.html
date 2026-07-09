@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مراقبة صلاحية المنتجات - شركة نايف للأغذية</title>
     <link rel="icon" href="https://i.postimg.cc/NM2zJWZD/NAIF-LOGO.jpg" type="image/jpeg">
+    <!-- مكتبات تصدير PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -16,6 +19,7 @@
             background: #f4f7fc;
             padding: 20px;
             color: #1e2a3a;
+            min-height: 100vh;
         }
         .container {
             max-width: 1400px;
@@ -25,7 +29,8 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
             padding: 25px 30px 30px;
         }
-        /* header */
+
+        /* رأس الصفحة */
         .header {
             display: flex;
             align-items: center;
@@ -43,33 +48,44 @@
         }
         .header .title-group {
             flex: 1;
+            display: flex;
+            flex-direction: column;
         }
-        .header h1 {
-            font-size: 26px;
-            color: #1e2a3a;
+        .header .company-name {
+            font-size: 32px;
             font-weight: 700;
-            letter-spacing: 0.5px;
+            color: #1e2a3a;
+            line-height: 1.2;
         }
-        .header h1 small {
-            font-size: 16px;
-            font-weight: 400;
+        .header .company-name small {
+            font-size: 18px;
+            font-weight: 300;
             color: #6b7a8f;
             display: block;
-            margin-top: 4px;
         }
-        .header .sub {
-            font-size: 14px;
+        .header .sub-title {
+            font-size: 16px;
             color: #6b7a8f;
             background: #f0f4fa;
-            padding: 6px 18px;
+            padding: 4px 18px;
             border-radius: 30px;
-            white-space: nowrap;
+            display: inline-block;
+            margin-top: 4px;
         }
-        .header .sub strong {
+        .header .sub-title strong {
             color: #e63946;
         }
+        .header .date-badge {
+            background: #e63946;
+            color: #fff;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
 
-        /* controls */
+        /* شريط التحكمات */
         .controls {
             display: flex;
             flex-wrap: wrap;
@@ -81,28 +97,20 @@
             border-radius: 14px;
             border: 1px solid #e9edf4;
         }
-        .controls label {
+        .controls .filter-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+        .controls .filter-group label {
             font-weight: 600;
             font-size: 14px;
             color: #2c3e50;
             display: flex;
             align-items: center;
             gap: 6px;
-        }
-        .controls input[type="number"] {
-            width: 80px;
-            padding: 6px 10px;
-            border: 1px solid #d0d8e3;
-            border-radius: 8px;
-            font-size: 14px;
-            background: #fff;
-        }
-        .controls .filter-group {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 10px;
-            margin-right: auto;
         }
         .controls .filter-group select {
             padding: 6px 14px;
@@ -111,6 +119,55 @@
             background: #fff;
             font-size: 14px;
             min-width: 160px;
+        }
+        .controls .filter-group input[type="text"] {
+            padding: 6px 12px;
+            border: 1px solid #d0d8e3;
+            border-radius: 8px;
+            font-size: 14px;
+            min-width: 140px;
+        }
+        .controls .restaurant-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fff;
+            padding: 4px 16px 4px 12px;
+            border-radius: 30px;
+            border: 1px solid #d0d8e3;
+            margin-right: 10px;
+        }
+        .controls .restaurant-area label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #2c3e50;
+            white-space: nowrap;
+        }
+        .controls .restaurant-area input {
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e2a3a;
+            padding: 6px 0;
+            min-width: 150px;
+            outline: none;
+        }
+        .controls .restaurant-area input:focus {
+            border-bottom: 2px solid #e63946;
+        }
+        .controls .restaurant-area input::placeholder {
+            color: #b0c0d0;
+            font-weight: 400;
+        }
+        .controls .badge-count {
+            background: #e63946;
+            color: #fff;
+            font-size: 13px;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-weight: 600;
+            white-space: nowrap;
         }
         .controls .btn-reset {
             background: #e63946;
@@ -122,20 +179,31 @@
             font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
+            white-space: nowrap;
         }
         .controls .btn-reset:hover {
             background: #c62836;
         }
-        .badge-count {
-            background: #e63946;
+        .controls .btn-pdf {
+            background: #1e2a3a;
             color: #fff;
-            font-size: 13px;
-            padding: 2px 14px;
-            border-radius: 30px;
+            border: none;
+            padding: 6px 18px;
+            border-radius: 8px;
+            font-size: 14px;
             font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .controls .btn-pdf:hover {
+            background: #0d1a2a;
         }
 
-        /* table wrapper */
+        /* الجدول */
         .table-wrap {
             overflow-x: auto;
             border-radius: 14px;
@@ -145,7 +213,7 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 14px;
-            min-width: 1000px;
+            min-width: 1100px;
         }
         th {
             background: #1e2a3a;
@@ -161,7 +229,7 @@
             z-index: 5;
         }
         td {
-            padding: 12px 10px;
+            padding: 10px 8px;
             border-bottom: 1px solid #eef2f8;
             vertical-align: middle;
             text-align: center;
@@ -189,10 +257,22 @@
             font-weight: 500;
             min-width: 160px;
         }
-        .col-date {
-            font-family: 'Courier New', monospace;
+        .col-date input[type="date"] {
+            border: 1px solid #d0d8e3;
+            border-radius: 6px;
+            padding: 4px 6px;
             font-size: 13px;
-            color: #2c3e50;
+            background: #fff;
+            width: 130px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            color: #1e2a3a;
+            transition: 0.2s;
+        }
+        .col-date input[type="date"]:focus {
+            border-color: #e63946;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.15);
         }
         .col-days {
             font-weight: 700;
@@ -271,7 +351,7 @@
             background: #fffbf0 !important;
         }
 
-        /* footer signature */
+        /* التذييل */
         .footer {
             margin-top: 35px;
             padding-top: 20px;
@@ -287,102 +367,111 @@
             color: #6b7a8f;
         }
 
-        /* ===== توقيع المطور ===== */
-        .signature-card {
-            position: relative;
+        /* ===== توقيع المطور - مستطيل صغير في أسفل الصفحة ===== */
+        .signature-rect {
             display: inline-block;
-            padding: 7px 16px;
+            padding: 6px 20px;
             border: 2px solid #e63946;
-            border-radius: 12px;
-            background: transparent;
+            border-radius: 10px;
+            background: #fff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-size: 0.75rem;
-            /* 25% أصغر من الأساس (1rem → 0.75rem) */
+            /* أصغر 25% من الأساس */
             font-weight: 600;
             text-decoration: none;
             color: #1e2a3a;
-            transition: 0.2s;
-            box-shadow: 0 2px 8px rgba(230, 57, 70, 0.08);
+            transition: 0.3s;
+            box-shadow: 0 2px 10px rgba(230, 57, 70, 0.06);
             cursor: pointer;
             line-height: 1.4;
+            text-align: center;
+            /* عرض أقل – مستطيل أفقي */
+            max-width: 180px;
+            width: auto;
         }
-        .signature-card:hover {
-            transform: scale(1.03);
+        .signature-rect:hover {
+            transform: scale(1.04);
             border-color: #b71c1c;
-            box-shadow: 0 4px 14px rgba(230, 57, 70, 0.15);
+            box-shadow: 0 4px 16px rgba(230, 57, 70, 0.15);
         }
-        .signature-card .name {
+        .signature-rect .name {
             font-size: 0.85rem;
             font-weight: 700;
             color: #1e2a3a;
         }
-        .signature-card .title {
-            font-size: 0.65rem;
+        .signature-rect .title {
+            font-size: 0.6rem;
             opacity: 0.75;
             font-weight: 500;
             color: #2c3e50;
         }
-        /* إزالة كل الألوان باستثناء الإطار الأحمر – كما طُلب */
-        .signature-card::before,
-        .signature-card::after {
+        .signature-rect::before,
+        .signature-rect::after {
             display: none !important;
         }
 
-        /* responsive */
+        /* توافق الشاشات الصغيرة */
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
             }
-            .header h1 {
-                font-size: 20px;
+            .header .company-name {
+                font-size: 24px;
             }
-            .header img {
-                height: 50px;
+            .header .company-name small {
+                font-size: 14px;
             }
             .controls {
                 flex-direction: column;
                 align-items: stretch;
             }
             .controls .filter-group {
-                margin-right: 0;
                 flex-wrap: wrap;
             }
-            .controls .filter-group select {
+            .controls .restaurant-area {
+                margin-right: 0;
+                flex-wrap: wrap;
+                width: 100%;
+            }
+            .controls .restaurant-area input {
                 min-width: 120px;
                 flex: 1;
             }
-            .table-wrap {
-                font-size: 12px;
+            .controls .badge-count,
+            .controls .btn-reset,
+            .controls .btn-pdf {
+                align-self: flex-start;
             }
-            th,
-            td {
-                padding: 8px 6px;
+            .col-date input[type="date"] {
+                width: 100px;
+                font-size: 12px;
             }
             .alert-box {
                 font-size: 16px;
                 min-width: 60px;
                 padding: 4px 8px;
             }
-            .col-days {
-                font-size: 14px;
-            }
             .input-threshold {
                 width: 60px;
                 font-size: 12px;
-                padding: 4px 4px;
             }
-            .signature-card {
+            .footer {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .signature-rect {
+                max-width: 160px;
+                padding: 5px 14px;
                 font-size: 0.7rem;
             }
         }
         @media print {
-            .controls,
-            .btn-reset,
-            .input-threshold,
-            .filter-group select {
+            .controls .btn-pdf,
+            .controls .btn-reset {
                 display: none !important;
             }
-            .signature-card {
+            .signature-rect {
                 border-color: #e63946 !important;
             }
             body {
@@ -392,6 +481,11 @@
             .container {
                 box-shadow: none;
                 padding: 10px;
+            }
+            .col-date input[type="date"],
+            .input-threshold {
+                border: 1px solid #aaa !important;
+                background: #f9f9f9 !important;
             }
         }
     </style>
@@ -404,17 +498,16 @@
         <div class="header">
             <img src="https://i.postimg.cc/NM2zJWZD/NAIF-LOGO.jpg" alt="شعار نايف" onerror="this.style.display='none'">
             <div class="title-group">
-                <h1>
-                    مراقبة صلاحية المنتجات
-                    <small>شركة نايف للأغذية ذ.م.م &bull; NAIF FOOD CO. W.L.L.</small>
-                </h1>
+                <div class="company-name">
+                    شركة نايف للأغذية
+                    <small>NAIF FOOD CO. W.L.L.</small>
+                </div>
+                <span class="sub-title"><strong>مراقبة صلاحية المنتجات</strong></span>
             </div>
-            <div class="sub">
-                <strong>تحديث فوري</strong> &bull; <span id="currentDate"></span>
-            </div>
+            <div class="date-badge" id="currentDate"></div>
         </div>
 
-        <!-- CONTROLS -->
+        <!-- CONTROLS (اسم المطعم في أقصى اليمين) -->
         <div class="controls">
             <div class="filter-group">
                 <label>📋 التصنيف:
@@ -423,11 +516,19 @@
                     </select>
                 </label>
                 <label>🔍 بحث:
-                    <input type="text" id="searchInput" placeholder="اسم أو كود..." oninput="renderTable()" style="padding:6px 12px;border:1px solid #d0d8e3;border-radius:8px;font-size:14px;min-width:140px;">
+                    <input type="text" id="searchInput" placeholder="اسم أو كود..." oninput="renderTable()">
                 </label>
             </div>
+
+            <!-- اسم المطعم – جهة اليمين -->
+            <div class="restaurant-area">
+                <label>🏪 المطعم:</label>
+                <input type="text" id="restaurantNameInput" placeholder="مثال: فرع الشويخ" value="مطعم دجاج نايف - فرع الشويخ">
+            </div>
+
             <span class="badge-count" id="countBadge">0 منتج</span>
-            <button class="btn-reset" onclick="resetThresholds()">↺ إعادة ضبط التنبيهات</button>
+            <button class="btn-reset" onclick="resetThresholds()">↺ إعادة ضبط</button>
+            <button class="btn-pdf" onclick="exportToPDF()">📄 تصدير PDF</button>
         </div>
 
         <!-- TABLE -->
@@ -452,13 +553,12 @@
             </table>
         </div>
 
-        <!-- FOOTER + SIGNATURE -->
+        <!-- FOOTER مع التوقيع المستطيل الصغير -->
         <div class="footer">
             <div class="update-info">
-                <span>🔄 يتم التحديث تلقائياً &bull; آخر تحديث: <span id="lastUpdate"></span></span>
+                <span>🔄 تحديث تلقائي &bull; آخر تحديث: <span id="lastUpdate"></span></span>
             </div>
-            <!-- التوقيع المصغر 25% ، بدون ألوان ، إطار أحمر فقط -->
-            <a href="https://yasser-q8.github.io/myprofile/#" class="signature-card" target="_blank" rel="noopener noreferrer">
+            <a href="https://yasser-q8.github.io/myprofile/#" class="signature-rect" target="_blank" rel="noopener noreferrer">
                 <div class="name">Yasser Elkhateeb</div>
                 <div class="title">مطور البرنامج 67011143</div>
             </a>
@@ -467,13 +567,12 @@
     </div>
 
     <script>
-        // ============================================================
-        //  1.  البيانات المستوردة من ملف Excel (جميع المنتجات مع مجموعاتها)
-        //     مع إضافة تواريخ صلاحية افتراضية (Production & Expiry)
-        // ============================================================
+        // ================================================================
+        //  1.  البيانات (جميع الأصناف الصالحة - تم استبعاد الورقيات والمواد غير الغذائية)
+        // ================================================================
 
         const rawProducts = [
-            // A-FROZEN(-18°C)
+            // ===== A-FROZEN =====
             { group: "A-FROZEN(-18°C)", code: "A1007", name: "Beef Burger Big(برجر لحم كبير)" },
             { group: "A-FROZEN(-18°C)", code: "A1008", name: "Beef Burger Small(برجر لحم صغير)" },
             { group: "A-FROZEN(-18°C)", code: "A1009", name: "Butter Finger(زبدة اصابع)" },
@@ -489,7 +588,8 @@
             { group: "A-FROZEN(-18°C)", code: "A1003", name: "Mozzarella Stick(اصابع مودزريلا)" },
             { group: "A-FROZEN(-18°C)", code: "A1002", name: "Onion Rings( حلقات بصل)" },
             { group: "A-FROZEN(-18°C)", code: "A1014", name: "Twister Fries LW (بطاط حلزونية تويستر)" },
-            // B-FOOD ITEMS
+
+            // ===== B-FOOD ITEMS =====
             { group: "B-FOOD ITEMS", code: "B1007", name: "Basmati Rice( ارزبسمتى)" },
             { group: "B-FOOD ITEMS", code: "B1019", name: "BBQ sauce Gal / باربيكيو صوص جالون" },
             { group: "B-FOOD ITEMS", code: "B2029", name: "Black Olives sliced  ( زيتون اسود شرائح)" },
@@ -522,18 +622,21 @@
             { group: "B-FOOD ITEMS", code: "B10566", name: "Sweet Chilli Sauce Gal (صلصة الفلفل الحلو جالون)" },
             { group: "B-FOOD ITEMS", code: "B2054", name: "sweet corn( ذرة حب )" },
             { group: "B-FOOD ITEMS", code: "B1024", name: "Swiss Cheese slices(جبنة سويسرية ابيض شرائح)" },
-            // C-BEVERAGES
+
+            // ===== C-BEVERAGES =====
             { group: "C-BEVERAGES", code: "C1005", name: "Aquafina Water 600ml  ( مياة أكوافينا صغير)" },
             { group: "C-BEVERAGES", code: "C1003", name: "Pepsi 1.25 Ltr  ( بيبسى عائلى)" },
             { group: "C-BEVERAGES", code: "C1004", name: "Pepsi 2.25 Ltr( بيبسى عائلى)" },
             { group: "C-BEVERAGES", code: "C1001", name: "Pepsi BIB Syrup( بيبسي ماكينة)" },
             { group: "C-BEVERAGES", code: "C1002", name: "Pepsi Can 250ml(بيبسى علب250 م)" },
             { group: "C-BEVERAGES", code: "C1006", name: "Shireen Juice(عصيرشيرين)" },
-            // D-SPICES
+
+            // ===== D-SPICES =====
             { group: "D-SPICES", code: "D2036", name: "Baraka Nigella seeds( حبة البركة )" },
             { group: "D-SPICES", code: "D1002", name: "Black Pepper Sachets (فلفل اسود بورشن)" },
             { group: "D-SPICES", code: "D1001", name: "Red Chilli Powder(فلفل احمر بودرة)" },
-            // E-BREAD & PASTRY
+
+            // ===== E-BREAD & PASTRY =====
             { group: "E-BREAD & PASTRY", code: "E1001", name: "Arabic Bread (خبز عربى شد3)" },
             { group: "E-BREAD & PASTRY", code: "E1012", name: "Arabic Bread (خبز عربى للشاورما)" },
             { group: "E-BREAD & PASTRY", code: "E1023", name: "Brioche Bun Dbl Glaze(خبز بريوش دبل جليز)" },
@@ -546,117 +649,8 @@
             { group: "E-BREAD & PASTRY", code: "E1013", name: "Slider Bun (خبز سلايدر )" },
             { group: "E-BREAD & PASTRY", code: "E1014", name: "Tannur Bread(خبز تنور)" },
             { group: "E-BREAD & PASTRY", code: "E1008", name: "Tortella Bread white 20cm (خبز تورتيلا راب)" },
-            // F-CHEMICALS & CLEANING
-            { group: "F-CHEMICALS & CLEANING", code: "F1004", name: "All Purpose Liq  ( صابون سائل)" },
-            { group: "F-CHEMICALS & CLEANING", code: "F1009", name: "Clorox  ( كلوركس)" },
-            { group: "F-CHEMICALS & CLEANING", code: "F1008", name: "Dettol  ( ديتول)" },
-            { group: "F-CHEMICALS & CLEANING", code: "F1014", name: "Floor Brush  ( بروش ارضية)" },
-            { group: "F-CHEMICALS & CLEANING", code: "F1002", name: "Garbage Bag Black  ( اكياس قمامة اسود)" },
-            { group: "F-CHEMICALS & CLEANING", code: "F1011", name: "Glass Cleaner  ( منظف زجاج)" },
-            { group: "F-CHEMICALS & CLEANING", code: "F1010", name: "Hand Sanitizer  ( معقم ايدى)" },
-            { group: "F-CHEMICALS & CLEANING", code: "F1005", name: "Hand Soap Liquid  ( صابون سائل لليدين)" },
-            { group: "F-CHEMICALS & CLEANING", code: "F1012", name: "Insect Killer Spray  ( قاتل حشرات)" },
-            { group: "F-CHEMICALS & CLEANING", code: "F1019", name: "J-Cloth  ( فوطة طاولة)" },
-            { group: "F-CHEMICALS & CLEANING", code: "F1001", name: "Maxi Roll  ( تواليت رول)" },
-            { group: "F-CHEMICALS & CLEANING", code: "F1017", name: "Mop Cotton W/Stick (موب قطن كامل مع عصا)" },
-            { group: "F-CHEMICALS & CLEANING", code: "F1018", name: "Mop Head  ( موب قطن)" },
-            { group: "F-CHEMICALS & CLEANING", code: "F2002", name: "M-Tork / رول تواليت مقطوع كبير" },
-            { group: "F-CHEMICALS & CLEANING", code: "F1006", name: "Oven Cleaner Liq  ( منظف شواية)" },
-            { group: "F-CHEMICALS & CLEANING", code: "F1016", name: "Sponge  ( اسفنج)" },
-            { group: "F-CHEMICALS & CLEANING", code: "F2001", name: "Toilet Roll Small / رول حمام صغير" },
-            { group: "F-CHEMICALS & CLEANING", code: "F2003", name: "T-Tork / رول تواليت مقطوع صغير" },
-            { group: "F-CHEMICALS & CLEANING", code: "F1013", name: "Water Squeezer  ( جلدة ارضية)" },
-            // G-NON FOOD
-            { group: "G-NON FOOD", code: "G2057", name: "Almn Platter / صحن المونيوم (OV2)" },
-            { group: "G-NON FOOD", code: "G1046", name: "Alu Container#83190(ماعون المونيوم كبير)" },
-            { group: "G-NON FOOD", code: "G1021", name: "Alu foil wrap Big Fillet ( ورق سندوتش سلفر كبير-نايف)" },
-            { group: "G-NON FOOD", code: "G1020", name: "Alu foil wrap Sandwich ( ورق سندوتش سلفر-نايف)" },
-            { group: "G-NON FOOD", code: "G1019", name: "Alu foil wrap Shawarma(ورق سلفر للشاورما)" },
-            { group: "G-NON FOOD", code: "G1043", name: "Aluminium Container 3 dept ( ماعون كبدة)" },
-            { group: "G-NON FOOD", code: "G1038", name: "Aluminium Foil  ( المونيوم فويل)" },
-            { group: "G-NON FOOD", code: "G1014", name: "Aluminum Container#83120  (ماعون المونيوم تكا+بنت الديك)" },
-            { group: "G-NON FOOD", code: "G1013", name: "Big Fillet Sandwich Box(علب بيج فيلية ساندويش)" },
-            { group: "G-NON FOOD", code: "G2024", name: "Break Fast Container 5CP (ماعون ميكرويف للفطار)" },
-            { group: "G-NON FOOD", code: "G1018", name: "Burger Box  ( علب برجر+فيلية)" },
-            { group: "G-NON FOOD", code: "G1050", name: "Charcoal  ( فحم)" },
-            { group: "G-NON FOOD", code: "G1061", name: "Clear Container 2 Oz Hing lid (ماعون شفاف 2 اونص مع غطاء)" },
-            { group: "G-NON FOOD", code: "G1024", name: "Cling Film Roll  ( كلينج فيلم)" },
-            { group: "G-NON FOOD", code: "G1007", name: "Dinner Box  ( علب دينر)" },
-            { group: "G-NON FOOD", code: "G1039", name: "Disposable Plst Apron  ( مريول نايلون)" },
-            { group: "G-NON FOOD", code: "G1060", name: "Exp Date Sticker Naif (استيكر تاريخ نايف)" },
-            { group: "G-NON FOOD", code: "G1001", name: "Family Meal Bucket 170oz  ( سطل وجبة فاميلي)" },
-            { group: "G-NON FOOD", code: "G1004", name: "Filter Bag Big( فلتر قماش كبير)" },
-            { group: "G-NON FOOD", code: "G1005", name: "Filter Bag Small( فلتر قماش سغر)" },
-            { group: "G-NON FOOD", code: "G1006", name: "French fries Box-Lrg (علب شيبسى كبير)" },
-            { group: "G-NON FOOD", code: "G1010", name: "French Fries Box-Med(علب شيبسي وسط)" },
-            { group: "G-NON FOOD", code: "G1008", name: "French Fries Box-Small(علب شيبسي صغير)" },
-            { group: "G-NON FOOD", code: "G1040", name: "Hair Net  ( كاب قطن)" },
-            { group: "G-NON FOOD", code: "G2023", name: "Hot Tea Cup 8oz  (جلاس ورق للشاي)" },
-            { group: "G-NON FOOD", code: "G1065", name: "Kids Fries Pouch - علب شيبس اطفال شد 1550" },
-            { group: "G-NON FOOD", code: "G1009", name: "Kids Meal Box  ( علب وجبة أطفال)" },
-            { group: "G-NON FOOD", code: "G1023", name: "Napkin Plain 30*30  ( نابكن سادة)" },
-            { group: "G-NON FOOD", code: "G1022", name: "N-Box  (  بوكس- N)" },
-            { group: "G-NON FOOD", code: "G2028", name: "Paper Bag #1 Naif  كيس ورق رقم 1 نايف-شد 10كيلو" },
-            { group: "G-NON FOOD", code: "G1015", name: "Paper Bag #3 Naif( كيس ورق رقم 3نايف)" },
-            { group: "G-NON FOOD", code: "G1002", name: "Paper bag W/H -Small (شنطة ورق نايف-صغير)" },
-            { group: "G-NON FOOD", code: "G1017", name: "Paper Bag W/H-Big  ( شنطة ورق نايف كبير)" },
-            { group: "G-NON FOOD", code: "G1054", name: "Paper Cup 16oz Naif(ماعون ورق 16 اونص نايف)" },
-            { group: "G-NON FOOD", code: "G1068", name: "Paper Cup 6oz with lid /  ماعون ورق 6 اونص للذرة" },
-            { group: "G-NON FOOD", code: "G2033", name: "Paper Face Mask  (كمامة ورق)" },
-            { group: "G-NON FOOD", code: "G1003", name: "Paper Plate Naif  ( ماعون ورق نايف)" },
-            { group: "G-NON FOOD", code: "G1059", name: "Pepsi Carrier 4 Cup(حاملات 4 كوب)" },
-            { group: "G-NON FOOD", code: "G1057", name: "Pepsi Glass 24 oz(جلاس بيبسى 24اونص)" },
-            { group: "G-NON FOOD", code: "G1055", name: "Pepsi Glass16 oz(جلاس بيبسى 16اونص)" },
-            { group: "G-NON FOOD", code: "G1058", name: "Pepsi Glass-32oz  ( جلاس بيبسى 32اونص)" },
-            { group: "G-NON FOOD", code: "G1011", name: "pizza box 21*21 (علب بيتزا 21*21 )" },
-            { group: "G-NON FOOD", code: "G1030", name: "Place Mat Naif  ( بلاسمات نايف)" },
-            { group: "G-NON FOOD", code: "G1032", name: "Plastic Bag 50*50 Naif ( اكياس نايلون 50*50 نايف)" },
-            { group: "G-NON FOOD", code: "G1035", name: "Plastic Bag 50*50 Plain  ( اكياس علاقة صغير)" },
-            { group: "G-NON FOOD", code: "G1033", name: "Plastic Bag 50*80 Transp  ( اكياس نايلون شفاف)" },
-            { group: "G-NON FOOD", code: "G2045", name: "Plastic Bag 65*65 Plain(اكياس علاقة كبير 65*65)" },
-            { group: "G-NON FOOD", code: "G1028", name: "Plastic Fork Blk HD  ( شوكة اسود)" },
-            { group: "G-NON FOOD", code: "G1025", name: "Plastic Glass 7oz ( جلاس ماء)" },
-            { group: "G-NON FOOD", code: "G1067", name: "Plastic Knife /سكينة بلاستيك" },
-            { group: "G-NON FOOD", code: "G1027", name: "Plastic Spoon  ( ملاعق بلاستيك)" },
-            { group: "G-NON FOOD", code: "G2027", name: "Plastic Tea Spoon  ( ملاعق شاى)" },
-            { group: "G-NON FOOD", code: "G1041", name: "Plst Clr Container 2oz( ماعون ثوم مجانى)" },
-            { group: "G-NON FOOD", code: "G1069", name: "Plst Container 150ml /علب صوصات 150م" },
-            { group: "G-NON FOOD", code: "G1062", name: "Plst Sushi Contnr SCF3/ماعون سوشي أسود صغير-شاورما" },
-            { group: "G-NON FOOD", code: "G1051", name: "Pointed Straws  ( شاليمون ملون للعصير)" },
-            { group: "G-NON FOOD", code: "G1012", name: "Ppr box for Shawaya  ( علبه كرتون للشوايه)" },
-            { group: "G-NON FOOD", code: "G2063", name: "Puri Box 300 علب بوري" },
-            { group: "G-NON FOOD", code: "G2054", name: "Rice Bowl Lid 105 Oz Naif Food (ماعون ار" },
-            { group: "G-NON FOOD", code: "G1045", name: "Round Sticker Naif(استيكر مدور نايف)" },
-            { group: "G-NON FOOD", code: "G1037", name: "Sandwich Paper Wrap-Plain  ( ورق ساندوش عادى)" },
-            { group: "G-NON FOOD", code: "G2059", name: "Slider box (علبة سلايدر )" },
-            { group: "G-NON FOOD", code: "G2068", name: "Snack Box /علبة سناك" },
-            { group: "G-NON FOOD", code: "G1029", name: "Straw Wrapped  ( شاليمون مغلف)" },
-            { group: "G-NON FOOD", code: "G2060", name: "surface sanitizer (مطهر و معقم 650 مل )" },
-            { group: "G-NON FOOD", code: "G1053", name: "Thrift Meal Bucket 130oz  ( سطل ثرفت باك)" },
-            { group: "G-NON FOOD", code: "G1048", name: "Tooth Picks  ( نكاشات اسنان)" },
-            { group: "G-NON FOOD", code: "G1052", name: "Toys  ( العاب اطفال)" },
-            { group: "G-NON FOOD", code: "G1066", name: "Transp Cheese Cake Box /علب شفاف تشيز كيك" },
-            { group: "G-NON FOOD", code: "G2069", name: "Transp Plst Glass 16oz (جلاس شفاف 16 اونص)" },
-            { group: "G-NON FOOD", code: "G1036", name: "Trnsp Plastic Gloves  (جلفز بلاستيك)" },
-            { group: "G-NON FOOD", code: "G1042", name: "Vinyl Gloves(جلفز طبى الفينيل)" },
-            { group: "G-NON FOOD", code: "G1044", name: "Wax For Charcoal  ( مشعل فحم)" },
-            { group: "G-NON FOOD", code: "G1026", name: "Wax Paper Roll(ريكولاينر)" },
-            // H-STATIONARY
-            { group: "H-STATIONARY", code: "H1001", name: "A4 Paper  ( A4-ورق طابعة)" },
-            { group: "H-STATIONARY", code: "H1004", name: "Cash Roll 2Ply  ( رول ماكينة مزدوج)" },
-            { group: "H-STATIONARY", code: "H1006", name: "Cash Roll Delivery( رول ماكينة ديليفري)" },
-            { group: "H-STATIONARY", code: "H1005", name: "Compt Toner 85A  (85 A حبر طابعه)" },
-            { group: "H-STATIONARY", code: "H1003", name: "Epson Ribbon ERC38  ( شريط ماكينة صغير)" },
-            { group: "H-STATIONARY", code: "H1002", name: "Thermal Cash Roll  ( رول ماكينة كاش العصيمى)" },
-            // J-EQUIPMENT & SPARES
-            { group: "J-EQUIPMENT & SPARES", code: "J1002", name: "Display Bulb 40W  (لمبه دسيبليه 40واط)" },
-            { group: "J-EQUIPMENT & SPARES", code: "J1006", name: "Energy Saver Bulb  ( لمبه توفيرالطاقه)" },
-            { group: "J-EQUIPMENT & SPARES", code: "J1004", name: "Fl Tube Insect Killer 45CM  ( لمبه قاتله حشرات)" },
-            { group: "J-EQUIPMENT & SPARES", code: "J1005", name: "Fluorescent Tube 2ft ( لمبه نيون 2 قدم)" },
-            { group: "J-EQUIPMENT & SPARES", code: "J1001", name: "Halogen lamp 500W  (لمبه كشاف)" },
-            { group: "J-EQUIPMENT & SPARES", code: "J1003", name: "Heat lamp 100W  ( لمبه شيبس)" },
-            { group: "J-EQUIPMENT & SPARES", code: "J1009", name: "Water Filter (شمعه فلتر )" },
-            // KITCHEN-APPETIZERS
+
+            // ===== KITCHEN-APPETIZERS =====
             { group: "KITCHEN-APPETIZERS", code: "K2054", name: "BBQ sauce / باربيكيو صوص" },
             { group: "KITCHEN-APPETIZERS", code: "K2038", name: "Cheddar Cheese Portion (500Grm صوص جبنة شيدر)" },
             { group: "KITCHEN-APPETIZERS", code: "K2044", name: "Cheddar Cheese Sauce Spicy / صوص جبنة فلفل" },
@@ -689,7 +683,8 @@
             { group: "KITCHEN-APPETIZERS", code: "K2052", name: "Sweet Garlic Sauce / سويت جارليك صوص" },
             { group: "KITCHEN-APPETIZERS", code: "K2034", name: "Taboulla Salad Big  ( سلطة تبولة كبيرة)" },
             { group: "KITCHEN-APPETIZERS", code: "K2036", name: "Vegitable Salad Big  ( سلطة خضراء كبيرة)" },
-            // KITCHEN-MEAT
+
+            // ===== KITCHEN-MEAT =====
             { group: "KITCHEN-MEAT", code: "K1014", name: "Bint Al-Deek  ( بنت الديك)" },
             { group: "KITCHEN-MEAT", code: "K1016", name: "Ch.Finger Fillet Spicy  ( اصابع فيليه فلفل)" },
             { group: "KITCHEN-MEAT", code: "K1035", name: "Chicken Big Fillet  ( بيج فيلية)" },
@@ -724,7 +719,8 @@
             { group: "KITCHEN-MEAT", code: "K1011", name: "Rooster Junior  ( فروج نايف)" },
             { group: "KITCHEN-MEAT", code: "K1020", name: "Royal Grilled Chicken (دجاج شواية ملكي)" },
             { group: "KITCHEN-MEAT", code: "K1003", name: "Sish Tawouk  ( شيش طاووق)" },
-            // KITCHEN-VEGS & FRUITS
+
+            // ===== KITCHEN-VEGS & FRUITS =====
             { group: "KITCHEN-VEGS & FRUITS", code: "K3039", name: "Capsicum Dice Cut/فلفل مقطع صغير" },
             { group: "KITCHEN-VEGS & FRUITS", code: "K3005", name: "Carrots (جزر طازج)" },
             { group: "KITCHEN-VEGS & FRUITS", code: "K3030", name: "Fresh Cucumber (خيار طازجة)" },
@@ -736,7 +732,8 @@
             { group: "KITCHEN-VEGS & FRUITS", code: "K3011", name: "Onions White (بصل ابيض طازج)" },
             { group: "KITCHEN-VEGS & FRUITS", code: "K3003", name: "Parsley  (بقدونس)" },
             { group: "KITCHEN-VEGS & FRUITS", code: "K3002", name: "Tomatoes  ( طماطم)" },
-            // L-Naif Cafe
+
+            // ===== L-Naif Cafe =====
             { group: "L-Naif Cafe", code: "L1031", name: "Balck berry Syrup (شراب التوت الأسود)" },
             { group: "L-Naif Cafe", code: "L1007", name: "Barista Milk (حليب  باريستا )" },
             { group: "L-Naif Cafe", code: "L1020", name: "Blueberry Syrup (شراب  التوت الازرق)" },
@@ -779,26 +776,21 @@
             { group: "L-Naif Cafe", code: "L1036", name: "Wood Stirrers 21cm (نمامون الخشب 21 سم)" }
         ];
 
-        // ============================================================
-        //  2.  إضافة تواريخ صلاحية (Production & Expiry) لكل صنف
-        //     بناءً على المجموعة
-        // ============================================================
+        // ================================================================
+        //  2.  إضافة تواريخ صلاحية افتراضية
+        // ================================================================
 
         function getShelfLife(group) {
-            if (group.includes('FROZEN')) return 730; // 2 سنة
+            if (group.includes('FROZEN')) return 730;
             if (group.includes('FOOD ITEMS')) return 365;
             if (group.includes('BEVERAGES')) return 365;
             if (group.includes('SPICES')) return 730;
-            if (group.includes('BREAD & PASTRY')) return 7; // أيام
-            if (group.includes('CHEMICALS')) return 1095; // 3 سنوات
-            if (group.includes('NON FOOD')) return 1825; // 5 سنوات
-            if (group.includes('STATIONARY')) return 1825;
-            if (group.includes('EQUIPMENT')) return 1825;
+            if (group.includes('BREAD & PASTRY')) return 7;
             if (group.includes('KITCHEN-APPETIZERS')) return 90;
             if (group.includes('KITCHEN-MEAT')) return 180;
             if (group.includes('KITCHEN-VEGS')) return 10;
             if (group.includes('Naif Cafe')) return 365;
-            return 365; // default
+            return 365;
         }
 
         function randomDate(daysAgoMin, daysAgoMax) {
@@ -809,17 +801,8 @@
             return d;
         }
 
-        function formatDate(d) {
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        // بناء البيانات الكاملة
         let products = rawProducts.map((p, index) => {
             const shelf = getShelfLife(p.group);
-            // تاريخ الإنتاج: قبل 0–60 يوماً
             const prod = randomDate(0, 60);
             const exp = new Date(prod);
             exp.setDate(exp.getDate() + shelf);
@@ -830,22 +813,20 @@
                 name: p.name,
                 production: prod,
                 expiry: exp,
-                shelfDays: shelf,
-                threshold: 30 // افتراضي
+                threshold: 15
             };
         });
 
-        // ============================================================
-        //  3.  دوال العرض والترتيب والفلترة
-        // ============================================================
+        // ================================================================
+        //  3.  الدوال الأساسية
+        // ================================================================
 
         function getDaysRemaining(expiry) {
             const now = new Date();
             now.setHours(0, 0, 0, 0);
             const exp = new Date(expiry);
             exp.setHours(0, 0, 0, 0);
-            const diff = Math.ceil((exp - now) / (1000 * 60 * 60 * 24));
-            return diff;
+            return Math.ceil((exp - now) / (1000 * 60 * 60 * 24));
         }
 
         function getAlertStatus(daysRemaining, threshold) {
@@ -866,16 +847,11 @@
             currentFilter = filterGroup.value;
             searchTerm = searchInput.value.trim().toLowerCase();
 
-            // تجميع المنتجات مع الأيام المتبقية
-            const now = new Date();
-            now.setHours(0, 0, 0, 0);
-
             const enriched = products.map(p => {
                 const days = getDaysRemaining(p.expiry);
                 return { ...p, daysRemaining: days };
             });
 
-            // فلتر
             let filtered = enriched;
             if (currentFilter !== 'all') {
                 filtered = filtered.filter(p => p.group === currentFilter);
@@ -888,18 +864,18 @@
                 );
             }
 
-            // ترتيب: الأيام المتبقية تصاعدياً (الأقرب أولاً)
             filtered.sort((a, b) => a.daysRemaining - b.daysRemaining);
 
-            // تحديث العدد
             document.getElementById('countBadge').textContent = `${filtered.length} منتج`;
 
-            // إنشاء الصفوف
             let html = '';
             filtered.forEach((p, idx) => {
                 const alert = getAlertStatus(p.daysRemaining, p.threshold);
                 const rowClass = p.daysRemaining < 0 ? 'row-expired' :
                     p.daysRemaining <= p.threshold ? 'row-warning' : '';
+
+                const prodDate = p.production instanceof Date ? p.production.toISOString().split('T')[0] : p.production;
+                const expDate = p.expiry instanceof Date ? p.expiry.toISOString().split('T')[0] : p.expiry;
 
                 html += `
                     <tr class="${rowClass}">
@@ -907,8 +883,14 @@
                         <td><span class="col-group">${p.group}</span></td>
                         <td class="col-code">${p.code}</td>
                         <td class="col-name">${p.name}</td>
-                        <td class="col-date">${formatDate(p.production)}</td>
-                        <td class="col-date">${formatDate(p.expiry)}</td>
+                        <td class="col-date">
+                            <input type="date" value="${prodDate}" 
+                                   onchange="updateProductDate(${p.id}, 'production', this.value)">
+                        </td>
+                        <td class="col-date">
+                            <input type="date" value="${expDate}" 
+                                   onchange="updateProductDate(${p.id}, 'expiry', this.value)">
+                        </td>
                         <td class="col-days ${p.daysRemaining < 0 ? 'critical' : p.daysRemaining <= p.threshold ? 'warning' : 'good'}">
                             ${p.daysRemaining < 0 ? 'منتهي' : p.daysRemaining + ' يوم'}
                         </td>
@@ -927,14 +909,17 @@
             });
 
             tbody.innerHTML = html || `<tr><td colspan="9" style="padding:40px;text-align:center;color:#6b7a8f;">لا توجد منتجات مطابقة</td></tr>`;
-
-            // تحديث وقت آخر تحديث
             document.getElementById('lastUpdate').textContent = new Date().toLocaleString('ar-EG', { hour12: false });
         }
 
-        // ============================================================
-        //  4.  تحديث قيمة التنبيه لكل منتج
-        // ============================================================
+        function updateProductDate(id, field, value) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+            const newDate = new Date(value + 'T00:00:00');
+            if (isNaN(newDate.getTime())) return;
+            product[field] = newDate;
+            renderTable();
+        }
 
         function updateThreshold(id, value) {
             const val = parseInt(value, 10);
@@ -942,22 +927,14 @@
             const product = products.find(p => p.id === id);
             if (product) {
                 product.threshold = val;
-                renderTable(); // إعادة الرسم لتحديث التنبيهات
+                renderTable();
             }
         }
 
-        // ============================================================
-        //  5.  إعادة ضبط جميع التنبيهات إلى 30
-        // ============================================================
-
         function resetThresholds() {
-            products.forEach(p => p.threshold = 30);
+            products.forEach(p => p.threshold = 15);
             renderTable();
         }
-
-        // ============================================================
-        //  6.  ملء قائمة التصنيفات في الفلتر
-        // ============================================================
 
         function populateGroupFilter() {
             const select = document.getElementById('filterGroup');
@@ -970,9 +947,43 @@
             });
         }
 
-        // ============================================================
-        //  7.  تهيئة التاريخ الحالي
-        // ============================================================
+        // ================================================================
+        //  4.  تصدير PDF
+        // ================================================================
+
+        async function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'pt', 'a4');
+            const tableElement = document.getElementById('productTable');
+
+            // تحويل الجدول إلى صورة
+            const canvas = await html2canvas(tableElement, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+            });
+
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+            const imgWidth = pdf.internal.pageSize.getWidth();
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            // إضافة صورة الجدول
+            pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+
+            // إضافة تذييل بسيط (اسم المطعم والتاريخ)
+            const restaurant = document.getElementById('restaurantNameInput').value || 'مطعم نايف';
+            const dateStr = new Date().toLocaleDateString('ar-EG');
+            pdf.setFontSize(10);
+            pdf.setTextColor(100);
+            pdf.text(`المطعم: ${restaurant}  |  تاريخ التصدير: ${dateStr}`, 40, imgHeight + 30);
+
+            pdf.save('تقرير_الصلاحية.pdf');
+        }
+
+        // ================================================================
+        //  5.  التهيئة
+        // ================================================================
 
         document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ar-EG', {
             year: 'numeric',
@@ -981,20 +992,10 @@
             weekday: 'long'
         });
 
-        // ============================================================
-        //  8.  التشغيل النهائي
-        // ============================================================
-
         populateGroupFilter();
         renderTable();
 
-        // إعادة الرسم عند تغيير الفلتر أو البحث (يتم استدعاؤها عبر oninput/onchange)
-        // تم ربطها في HTML
-
-        // ============================================================
-        //  9.  (اختياري) تحديث تلقائي كل 60 ثانية
-        // ============================================================
-
+        // تحديث تلقائي كل 60 ثانية
         setInterval(() => {
             renderTable();
         }, 60000);
